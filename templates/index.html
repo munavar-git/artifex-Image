@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARTIFEX | AI Image Generator</title>
+    <meta name="description" content="Generate stunning AI images from text prompts. Free, fast, and beautiful.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="background-animation"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+
+                <!-- LET THE NAME BE THIS - ARTIFEX -->
+                <h1>ARTIFEX</h1>
+            </div>
+            <p class="tagline">Transform your imagination into stunning visuals</p>
+        </header>
+
+        <main class="main-content">
+            <div class="generator-card">
+                <div class="input-section">
+                    <!-- Main Prompt -->
+                    <div class="prompt-header">
+                        <label for="prompt" class="input-label">Describe your image</label>
+                        <div class="prompt-actions">
+                            <button id="savePromptBtn" class="mini-btn" title="Save Prompt">Save</button>
+                            <button id="viewFavoritesBtn" class="mini-btn" title="View Saved Prompts">Favorites</button>
+                            <button id="randomBtn" class="mini-btn" title="Random Prompt">Random</button>
+                            <button id="enhanceBtn" class="mini-btn" title="Enhance Prompt">Enhance</button>
+                        </div>
+                    </div>
+                    <textarea id="prompt" class="prompt-input"
+                        placeholder="A majestic dragon flying over a crystal castle at sunset, digital art, highly detailed..."
+                        rows="3"></textarea>
+
+                    <!-- Negative Prompt -->
+                    <div class="negative-section">
+                        <label for="negative" class="input-label negative-label">
+                            Negative prompt <span class="optional">(optional)</span>
+                        </label>
+                        <input type="text" id="negative" class="negative-input"
+                            placeholder="blurry, low quality, distorted, ugly...">
+                    </div>
+
+                    <!-- Options Row -->
+                    <div class="options-row options-row-3">
+                        <div class="option-group">
+                            <label for="model" class="option-label">Model</label>
+                            <select id="model" class="option-select">
+                                <option value="flux-pro">Flux Pro (Best Quality)</option>
+                                <option value="nanobanana-pro">Nanobanana Pro (4K)</option>
+                                <option value="nanobanana">Nanobanana (Gemini)</option>
+                                <option value="gptimage">GPT Image</option>
+                                <option value="seedream-pro">Seedream Pro</option>
+                                <option value="flux" selected>Flux (Balanced)</option>
+                                <option value="turbo">Turbo (Fast)</option>
+                                <option value="flux-realism">Flux Realism</option>
+                                <option value="flux-anime">Flux Anime</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="size" class="option-label">Size</label>
+                            <select id="size" class="option-select">
+                                <optgroup label="Square">
+                                    <option value="1024x1024" selected>1024 × 1024</option>
+                                    <option value="512x512">512 × 512</option>
+                                </optgroup>
+                                <optgroup label="Landscape">
+                                    <option value="1920x1080">1920 × 1080 (HD)</option>
+                                    <option value="2560x1440">2560 × 1440 (2K)</option>
+                                    <option value="3840x2160">3840 × 2160 (4K)</option>
+                                    <option value="1280x720">1280 × 720</option>
+                                </optgroup>
+                                <optgroup label="Portrait">
+                                    <option value="1080x1920">1080 × 1920 (Phone)</option>
+                                    <option value="720x1280">720 × 1280</option>
+                                    <option value="1024x1536">1024 × 1536</option>
+                                </optgroup>
+                                <optgroup label="Social Media">
+                                    <option value="1200x630">1200 × 630 (Facebook)</option>
+                                    <option value="1080x1080">1080 × 1080 (Instagram)</option>
+                                    <option value="1500x500">1500 × 500 (Twitter Banner)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="style" class="option-label">Style</label>
+                            <select id="style" class="option-select">
+                                <option value="">Default</option>
+                                <option value=", digital art">Digital Art</option>
+                                <option value=", oil painting">Oil Painting</option>
+                                <option value=", watercolor">Watercolor</option>
+                                <option value=", anime style">Anime</option>
+                                <option value=", photorealistic">Photorealistic</option>
+                                <option value=", 3D render">3D Render</option>
+                                <option value=", pixel art">Pixel Art</option>
+                                <option value=", cyberpunk style, neon lights">Cyberpunk</option>
+                                <option value=", steampunk style, brass and gears">Steampunk</option>
+                                <option value=", fantasy art, magical">Fantasy</option>
+                                <option value=", comic book style">Comic Book</option>
+                                <option value=", minimalist, simple">Minimalist</option>
+                                <option value=", impressionist painting">Impressionist</option>
+                                <option value=", surrealist art">Surrealist</option>
+                                <option value=", art nouveau style">Art Nouveau</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- HD Quality Toggle -->
+                    <div class="quality-toggle">
+                        <label class="toggle-container">
+                            <input type="checkbox" id="hdQuality" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">HD Quality</span>
+                        </label>
+                        <span class="quality-hint">Adds quality-boosting keywords to prompt</span>
+                    </div>
+
+                    <button id="generateBtn" class="generate-btn">
+                        <span class="btn-text">Generate Image</span>
+                        <span class="btn-icon"></span>
+                        <div class="btn-loader"></div>
+                    </button>
+
+                    <!-- Loading Progress -->
+                    <div id="loadingSection" class="loading-section hidden">
+                        <div class="loading-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <p class="loading-tip" id="loadingTip">Initializing AI model...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favorite Prompts Section -->
+            <div id="favoritesSection" class="favorites-section hidden">
+                <div class="favorites-header">
+                    <h2 class="favorites-title">Saved Prompts</h2>
+                    <button id="closeFavorites" class="close-favorites">Close</button>
+                </div>
+                <div id="favoritesList" class="favorites-list">
+                    <!-- Favorites will be added here -->
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="result-section hidden">
+                <div class="result-card">
+                    <div class="image-container" id="imageContainer">
+                        <img id="generatedImage" src="" alt="Generated Image" class="generated-image">
+                        <div class="image-overlay">
+                            <button id="fullscreenBtn" class="action-btn fullscreen-btn">View</button>
+                            <button id="downloadBtn" class="action-btn download-btn">Download</button>
+                            <button id="newImageBtn" class="action-btn new-btn">New</button>
+                        </div>
+                    </div>
+                    <div class="prompt-display-row">
+                        <p id="promptDisplay" class="prompt-display"></p>
+                        <button id="copyPromptBtn" class="copy-btn" title="Copy Prompt">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="errorSection" class="error-section hidden">
+                <div class="error-card">
+                    <span class="error-icon">!</span>
+                    <p id="errorMessage" class="error-message"></p>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="historySection" class="history-section">
+                <div class="history-header">
+                    <h2 class="history-title">History</h2>
+                    <button id="clearHistoryBtn" class="clear-history-btn">Clear All</button>
+                </div>
+                <div id="historyGrid" class="history-grid">
+                    <!-- History items will be added here -->
+                </div>
+                <p id="emptyHistory" class="empty-history">No images generated yet</p>
+            </div>
+        </main>
+
+        <!-- NO NEED OF FOOTER -->
+        <footer class="footer">
+            <p></p>
+        </footer>
+    </div>
+
+    <!-- Fullscreen Modal -->
+    <div id="fullscreenModal" class="fullscreen-modal hidden">
+        <button id="closeModal" class="close-modal">✕</button>
+        <img id="fullscreenImage" src="" alt="Fullscreen Image" class="fullscreen-image">
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // DOM Elements
+        const promptInput = document.getElementById('prompt');
+        const negativeInput = document.getElementById('negative');
+        const modelSelect = document.getElementById('model');
+        const sizeSelect = document.getElementById('size');
+        const styleSelect = document.getElementById('style');
+        const generateBtn = document.getElementById('generateBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const enhanceBtn = document.getElementById('enhanceBtn');
+        const resultSection = document.getElementById('resultSection');
+        const generatedImage = document.getElementById('generatedImage');
+        const promptDisplay = document.getElementById('promptDisplay');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const newImageBtn = document.getElementById('newImageBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const copyPromptBtn = document.getElementById('copyPromptBtn');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const historySection = document.getElementById('historySection');
+        const historyGrid = document.getElementById('historyGrid');
+        const emptyHistory = document.getElementById('emptyHistory');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const fullscreenModal = document.getElementById('fullscreenModal');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const closeModal = document.getElementById('closeModal');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        let currentImageUrl = '';
+        let currentPrompt = '';
+
+        // Initialize
+        loadHistory();
+
+        // Event Listeners
+        generateBtn.addEventListener('click', generateImage);
+        promptInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateImage();
+            }
+        });
+
+        randomBtn.addEventListener('click', getRandomPrompt);
+        enhanceBtn.addEventListener('click', enhancePrompt);
+        downloadBtn.addEventListener('click', downloadImage);
+        copyPromptBtn.addEventListener('click', copyPrompt);
+        fullscreenBtn.addEventListener('click', openFullscreen);
+        closeModal.addEventListener('click', closeFullscreen);
+        clearHistoryBtn.addEventListener('click', clearHistory);
+
+        newImageBtn.addEventListener('click', () => {
+            resultSection.classList.add('hidden');
+            promptInput.focus();
+        });
+
+        fullscreenModal.addEventListener('click', (e) => {
+            if (e.target === fullscreenModal) closeFullscreen();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeFullscreen();
+        });
+
+        // Functions
+        async function generateImage() {
+            const prompt = promptInput.value.trim();
+            const negative = negativeInput.value.trim();
+            const model = modelSelect.value;
+            const style = styleSelect.value;
+            const [width, height] = sizeSelect.value.split('x').map(Number);
+            const hdQuality = document.getElementById('hdQuality')?.checked ?? true;
+
+            if (!prompt) {
+                showError('Please enter a prompt to generate an image');
+                return;
+            }
+
+            generateBtn.classList.add('loading');
+            errorSection.classList.add('hidden');
+            resultSection.classList.add('hidden');
+
+            // Add quality-boosting keywords if HD Quality is enabled
+            let finalPrompt = prompt + style;
+            if (hdQuality) {
+                finalPrompt += ', masterpiece, best quality, ultra detailed, sharp focus, high resolution, 8K';
+            }
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: finalPrompt,
+                        negative: negative,
+                        model: model,
+                        width: width,
+                        height: height
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                currentImageUrl = data.image_url;
+                currentPrompt = data.prompt;
+
+                const img = new Image();
+                img.onload = () => {
+                    generatedImage.src = currentImageUrl;
+                    promptDisplay.textContent = `"${currentPrompt}"`;
+                    resultSection.classList.remove('hidden');
+                    generateBtn.classList.remove('loading');
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Save to history
+                    saveToHistory(currentImageUrl, currentPrompt);
+                };
+                img.onerror = () => {
+                    showError('Failed to generate image. Please try again.');
+                    generateBtn.classList.remove('loading');
+                };
+                img.src = currentImageUrl;
+
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+                generateBtn.classList.remove('loading');
+            }
+        }
+
+        async function getRandomPrompt() {
+            randomBtn.disabled = true;
+            try {
+                const response = await fetch('/random-prompt');
+                const data = await response.json();
+                promptInput.value = data.prompt;
+                promptInput.focus();
+                showToast('Random prompt generated!');
+            } catch (error) {
+                showError('Failed to get random prompt');
+            }
+            randomBtn.disabled = false;
+        }
+
+        async function enhancePrompt() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('Please enter a prompt first');
+                return;
+            }
+
+            enhanceBtn.disabled = true;
+            try {
+                const response = await fetch('/enhance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await response.json();
+                if (data.enhanced_prompt) {
+                    promptInput.value = data.enhanced_prompt;
+                    showToast('Prompt enhanced!');
+                }
+            } catch (error) {
+                showError('Failed to enhance prompt');
+            }
+            enhanceBtn.disabled = false;
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+            generateBtn.classList.remove('loading');
+        }
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        async function downloadImage() {
+            if (!currentImageUrl) return;
+            try {
+                const response = await fetch(currentImageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ai-generated-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showToast('Image downloaded!');
+            } catch (error) {
+                window.open(currentImageUrl, '_blank');
+            }
+        }
+
+        function copyPrompt() {
+            if (!currentPrompt) return;
+            navigator.clipboard.writeText(currentPrompt).then(() => {
+                showToast('Prompt copied to clipboard!');
+            }).catch(() => {
+                showError('Failed to copy prompt');
+            });
+        }
+
+        function openFullscreen() {
+            if (!currentImageUrl) return;
+            fullscreenImage.src = currentImageUrl;
+            fullscreenModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreen() {
+            fullscreenModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // History Functions
+        function getHistory() {
+            const history = localStorage.getItem('imageHistory');
+            return history ? JSON.parse(history) : [];
+        }
+
+        function saveToHistory(imageUrl, prompt) {
+            const history = getHistory();
+            const newItem = {
+                id: Date.now(),
+                imageUrl: imageUrl,
+                prompt: prompt,
+                timestamp: new Date().toISOString()
+            };
+            history.unshift(newItem);
+            // Keep only last 12 items
+            if (history.length > 12) history.pop();
+            localStorage.setItem('imageHistory', JSON.stringify(history));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = getHistory();
+            historyGrid.innerHTML = '';
+
+            if (history.length === 0) {
+                emptyHistory.classList.remove('hidden');
+                clearHistoryBtn.classList.add('hidden');
+                return;
+            }
+
+            emptyHistory.classList.add('hidden');
+            clearHistoryBtn.classList.remove('hidden');
+
+            history.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.prompt}" loading="lazy">
+                    <div class="history-overlay">
+                        <button class="history-use-btn" data-prompt="${encodeURIComponent(item.prompt)}">Use Prompt</button>
+                    </div>
+                `;
+                historyItem.querySelector('img').addEventListener('click', () => {
+                    currentImageUrl = item.imageUrl;
+                    currentPrompt = item.prompt;
+                    openFullscreen();
+                });
+                historyItem.querySelector('.history-use-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    promptInput.value = decodeURIComponent(e.target.dataset.prompt);
+                    promptInput.focus();
+                    showToast('Prompt loaded!');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                historyGrid.appendChild(historyItem);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all image history?')) {
+                localStorage.removeItem('imageHistory');
+                loadHistory();
+                showToast('History cleared!');
+            }
+        }
+
+        // ===== NEW FEATURES =====
+
+        // DOM Elements for new features
+        const savePromptBtn = document.getElementById('savePromptBtn');
+        const viewFavoritesBtn = document.getElementById('viewFavoritesBtn');
+        const favoritesSection = document.getElementById('favoritesSection');
+        const favoritesList = document.getElementById('favoritesList');
+        const closeFavorites = document.getElementById('closeFavorites');
+        const loadingSection = document.getElementById('loadingSection');
+        const loadingTip = document.getElementById('loadingTip');
+
+        // Loading tips
+        const loadingTips = [
+            "Initializing AI model...",
+            "Analyzing your prompt...",
+            "Generating composition...",
+            "Adding artistic details...",
+            "Applying style effects...",
+            "Refining image quality...",
+            "Almost there...",
+            "Finalizing your masterpiece..."
+        ];
+
+        let tipInterval;
+
+        // Event listeners for new features
+        if (savePromptBtn) savePromptBtn.addEventListener('click', savePromptToFavorites);
+        if (viewFavoritesBtn) viewFavoritesBtn.addEventListener('click', toggleFavorites);
+        if (closeFavorites) closeFavorites.addEventListener('click', () => favoritesSection.classList.add('hidden'));
+
+        // Save prompt to favorites
+        function savePromptToFavorites() {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('Please enter a prompt first');
+                return;
+            }
+
+            const favorites = getFavorites();
+
+            // Check if already exists
+            if (favorites.some(f => f.prompt === prompt)) {
+                showToast('Prompt already saved!');
+                return;
+            }
+
+            favorites.unshift({
+                id: Date.now(),
+                prompt: prompt,
+                timestamp: new Date().toISOString()
+            });
+
+            // Keep only last 20 favorites
+            if (favorites.length > 20) favorites.pop();
+
+            localStorage.setItem('favoritePrompts', JSON.stringify(favorites));
+            showToast('Prompt saved to favorites!');
+        }
+
+        // Get favorites from localStorage
+        function getFavorites() {
+            const favorites = localStorage.getItem('favoritePrompts');
+            return favorites ? JSON.parse(favorites) : [];
+        }
+
+        // Toggle favorites section
+        function toggleFavorites() {
+            if (favoritesSection.classList.contains('hidden')) {
+                loadFavorites();
+                favoritesSection.classList.remove('hidden');
+            } else {
+                favoritesSection.classList.add('hidden');
+            }
+        }
+
+        // Load and display favorites
+        function loadFavorites() {
+            const favorites = getFavorites();
+            favoritesList.innerHTML = '';
+
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<p class="empty-favorites">No saved prompts yet</p>';
+                return;
+            }
+
+            favorites.forEach(fav => {
+                const favItem = document.createElement('div');
+                favItem.className = 'favorite-item';
+                favItem.innerHTML = `
+                    <p class="favorite-prompt">${fav.prompt}</p>
+                    <div class="favorite-actions">
+                        <button class="fav-use-btn" data-prompt="${encodeURIComponent(fav.prompt)}">Use</button>
+                        <button class="fav-delete-btn" data-id="${fav.id}">Delete</button>
+                    </div>
+                `;
+
+                favItem.querySelector('.fav-use-btn').addEventListener('click', (e) => {
+                    promptInput.value = decodeURIComponent(e.target.dataset.prompt);
+                    favoritesSection.classList.add('hidden');
+                    promptInput.focus();
+                    showToast('Prompt loaded!');
+                });
+
+                favItem.querySelector('.fav-delete-btn').addEventListener('click', (e) => {
+                    deleteFavorite(parseInt(e.target.dataset.id));
+                });
+
+                favoritesList.appendChild(favItem);
+            });
+        }
+
+        // Delete a favorite
+        function deleteFavorite(id) {
+            let favorites = getFavorites();
+            favorites = favorites.filter(f => f.id !== id);
+            localStorage.setItem('favoritePrompts', JSON.stringify(favorites));
+            loadFavorites();
+            showToast('Prompt removed');
+        }
+
+        // Start loading progress
+        function startLoadingProgress() {
+            if (loadingSection) {
+                loadingSection.classList.remove('hidden');
+                let tipIndex = 0;
+                loadingTip.textContent = loadingTips[0];
+
+                tipInterval = setInterval(() => {
+                    tipIndex = (tipIndex + 1) % loadingTips.length;
+                    loadingTip.textContent = loadingTips[tipIndex];
+                }, 2500);
+            }
+        }
+
+        // Stop loading progress
+        function stopLoadingProgress() {
+            if (loadingSection) {
+                loadingSection.classList.add('hidden');
+                if (tipInterval) clearInterval(tipInterval);
+            }
+        }
+
+        // Override generateImage to use loading progress
+        const originalGenerateImage = generateImage;
+        generateImage = async function () {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('Please enter a prompt to generate an image');
+                return;
+            }
+
+            startLoadingProgress();
+
+            try {
+                await originalGenerateImage.call(this);
+            } finally {
+                stopLoadingProgress();
+            }
+        };
+    </script>
+</body>
+
+</html>
