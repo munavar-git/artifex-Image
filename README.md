@@ -152,7 +152,7 @@ python app.py
                          │ Returns: {image_url: "https://..."}
                          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     POLLINATIONS.AI API                         │
+│                     HUGGINGFACE API                             │
 │  ┌─────────────────────────────────────────────────────────┐   │
 │  │  • Receives the prompt via URL                           │   │
 │  │  • Uses AI (Flux model) to generate image                │   │
